@@ -17,7 +17,7 @@ accelerate launch Fundus_train_text_to_image_lora3.py \
   --rank 8 \
   --sync_loss_weight 0.001 \
   --prior_loss_weight 0.1 \
-  --sync_loss_start_step 10 \
+  --sync_loss_start_step 500 \
   --sync_loss_interval 10 \
   --stage 4 \
   --validation_prompt="A color fundus image from DDR dataset in normal stage." --report_to="wandb"

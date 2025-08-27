@@ -52,7 +52,7 @@ Download our trained LANet models (trained with DM data, ECC w/o filter, VGG bac
 ```bash
 cd LANet
 mkdir logs
-# Update model path at Line 210
+# Update model path at Line 200
 python main_lanet.py --model vgg --adaloss True --visname tests --test True
 ```
 
@@ -132,6 +132,8 @@ parser.add_argument('--ratio', type=float, default=None, help='useless in this v
 ---
 
 ## Citation
+
+If you find this repository useful, please consider citing our paper:
 
 ```bibtex
 @inproceedings{Placeholder,

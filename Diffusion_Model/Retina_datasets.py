@@ -17,7 +17,7 @@ class SyncAMDDataset(torch.utils.data.Dataset):
         # Convert label to text prompt and tokenize it
         label_text = self.image_folder.classes[label]
         label_prompt = "A color fundus image from DDR dataset in {} stage.".format(label_text)
-        print(label_prompt)
+        #print(label_prompt)
         inputs = self.tokenizer(
             label_prompt, max_length=self.tokenizer.model_max_length, padding="max_length", truncation=True, return_tensors="pt"
         )

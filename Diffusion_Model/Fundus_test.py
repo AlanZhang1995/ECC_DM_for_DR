@@ -1,5 +1,4 @@
 from diffusers import StableDiffusionPipeline
-import monai.transforms as mtransforms
 from torchvision import transforms
 
 import torch, os

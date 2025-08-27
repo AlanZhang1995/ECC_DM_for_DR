@@ -9,4 +9,5 @@ pip install transformers==4.37.2
 pip install peft==0.7.0
 pip install huggingface-hub==0.20.3
 pip install torch==2.2.2
+pip install torchvision==0.17.2
 COMMENT_DM_playground
