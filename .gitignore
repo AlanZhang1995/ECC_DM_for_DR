@@ -1,0 +1,10 @@
+.DS_Store
+*/.DS_Store
+*/__pycache__
+*/sd-retina-model-lora-fundus
+*/Sync_dataset_fundus
+*/wandb
+Diffusion_Model/run_fundus copy.sh
+LANet/checkpoints
+LANet/logs
+LANet/ddrdataset5.py

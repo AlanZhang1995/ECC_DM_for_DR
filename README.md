@@ -129,3 +129,12 @@ parser.add_argument('--sync_data', type=str, default=None, help='w/ and w/o filt
 parser.add_argument('--ratio', type=float, default=None, help='useless in this version')
 ```
 
+---
+
+## Citation
+
+```bibtex
+@inproceedings{Placeholder,
+  ...
+}
+```
