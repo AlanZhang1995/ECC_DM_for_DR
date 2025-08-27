@@ -20,11 +20,11 @@ I also upload my own docker image just in case `docker pull haochen1995/ecc-dm-f
 ## Data Structure
 I provide one screenshot of my data structure under `data_structure` folder along with necessary csv files.
 
-`DR_grading` includes my train/valid/test split. Please put it under your DDR dataset dir
+`DR_grading` includes my train/valid/test split. Please merge it with your DDR dataset.
 
-The pretrained LANet ckpts (the classifier group for semantic quality evaluation) can be found here: [google drive](https://drive.google.com/file/d/1Wkii7c3O-amhQJjubHUMsUn4CkjMFbQQ/view?usp=sharing). This step is necessary for DM inference.
+The pretrained LANet ckpts (the classifier group for semantic quality evaluation) can be found here: [google drive](https://drive.google.com/file/d/1Wkii7c3O-amhQJjubHUMsUn4CkjMFbQQ/view?usp=sharing).
 
-Download the datasets from their official website. BTW, I preprocessed the image following the LANet paper with [method](https://github.com/ErikLarssonDev/PyTorch/blob/011d4de2dbea1a09cbaa1608ce04b7411f6730f3/kaggle_diabetic_retinopathy_detection/preprocess_images.py#L57). I did so to better reproduce LANet performance. Please choose whether to do so based on your needs.
+Download the datasets from their official website. BTW, I preprocessed the image following the LANet paper with [method](https://github.com/ErikLarssonDev/PyTorch/blob/011d4de2dbea1a09cbaa1608ce04b7411f6730f3/kaggle_diabetic_retinopathy_detection/preprocess_images.py#L57) or my example code `./data_structure/DR_grading/preprocess_images.py`. I did so to better reproduce LANet performance. Please choose whether to do so based on your needs.
 
 
 ## Testing
@@ -41,6 +41,8 @@ python main_lanet.py --model vgg --adaloss True --visname tests --test True
 ```
 
 ## Whole Pipline
+
+I tested run the code through the whole pipline. It should good for you too run after fixing some _might unexpected_ path issue.
 
 ### 1. Diffusion Model Training
 
@@ -59,7 +61,7 @@ label2stage = {
 ```
 
 ```bash
-# modify dataset path in Line 58 of Retina_datasets.py
+# modify dataset path around Line 58 of Retina_datasets.py
 cd Diffusion_Model
 bash run_fundus.sh
 ```
