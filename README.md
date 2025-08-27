@@ -1,5 +1,7 @@
 # ECC_DM_for_DR
-Offical codebase for MICCAI 2025 paper "_Class-Conditioned Image Synthesis with Diffusion for Imbalanced Diabetic Retinopathy Grading_"
+
+Official codebase for the MICCAI 2025 paper:
+***Class-Conditioned Image Synthesis with Diffusion for Imbalanced Diabetic Retinopathy Grading***
 
 ---
 Author Feedback according to Reviewer's question:
@@ -11,44 +13,61 @@ Author Feedback according to Reviewer's question:
 ---
 
 ## Environment
-Basically, I am using the pytorch official docker image `pytorch/pytorch:1.11.0-cuda11.3-cudnn8-runtime` with additional libs.
 
-An example of creating a docker can be found in `start_docker.sh`, need to change `-v path` according to your need.
+We use the official PyTorch Docker image:
 
-I also upload my own docker image just in case `docker pull haochen1995/ecc-dm-for-dr`. But it is super huge.
+```bash
+docker pull pytorch/pytorch:1.11.0-cuda11.3-cudnn8-runtime
+```
+
+An example for creating a container is provided in `start_docker.sh` (modify the `-v path` according to your setup).
+
+Alternatively, you may pull our pre-built Docker image (note: very large; recommend using above example):
+
+```bash
+docker pull haochen1995/ecc-dm-for-dr
+```
+
+---
 
 ## Data Structure
-I provide one screenshot of my data structure under `data_structure` folder along with necessary csv files.
 
-`DR_grading` includes my train/valid/test split. Please merge it with your DDR dataset.
+A screenshot of the expected data organization is provided under the `data_structure/` folder, along with the necessary CSV files.
 
-The pretrained LANet ckpts (the classifier group for semantic quality evaluation) can be found here: [google drive](https://drive.google.com/file/d/1Wkii7c3O-amhQJjubHUMsUn4CkjMFbQQ/view?usp=sharing).
+* Datasets should be downloaded from their official websites.
+* `DR_grading/` contains my train/validation/test split (to be merged with your DDR dataset).
+* Pretrained **LANet checkpoints** (used for semantic quality evaluation) are available here: [Google Drive](https://drive.google.com/file/d/1Wkii7c3O-amhQJjubHUMsUn4CkjMFbQQ/view?usp=sharing).
 
-Download the datasets from their official website. BTW, I preprocessed the image following the LANet paper with [method](https://github.com/ErikLarssonDev/PyTorch/blob/011d4de2dbea1a09cbaa1608ce04b7411f6730f3/kaggle_diabetic_retinopathy_detection/preprocess_images.py#L57) or my example code `./data_structure/DR_grading/preprocess_images.py`. I did so to better reproduce LANet performance. Please choose whether to do so based on your needs.
+> **Note:** We preprocess images following the LANet paper using [this method](https://github.com/ErikLarssonDev/PyTorch/blob/011d4de2dbea1a09cbaa1608ce04b7411f6730f3/kaggle_diabetic_retinopathy_detection/preprocess_images.py#L57) or our example `./data_structure/DR_grading/preprocess_images.py`. Preprocessing is optional but helps reproduce LANet results.
 
+---
 
 ## Testing
 
-### LANet Evaluation (Accuracy in paper)
+### LANet Evaluation (Accuracy reported in paper)
 
-Download our trained LANet models (with DM data, ECC w/o filter, vgg, 5-fold): [google drive](https://drive.google.com/file/d/1a-el5k1JCOWMMLV7omp-VrEUlSpVXhd2/view?usp=sharing)
+Download our trained LANet models (trained with DM data, ECC w/o filter, VGG backbone, 5-fold):
+[Google Drive](https://drive.google.com/file/d/1a-el5k1JCOWMMLV7omp-VrEUlSpVXhd2/view?usp=sharing)
 
 ```bash
 cd LANet
 mkdir logs
-# change model path in Line 210
+# Update model path at Line 210
 python main_lanet.py --model vgg --adaloss True --visname tests --test True
 ```
 
-## Whole Pipline
+---
 
-I tested run the code through the whole pipline. It should good for you too run after fixing some _might unexpected_ path issue.
+## End-to-End Pipeline
+
+We verified the entire pipeline works as intended. You may encounter minor path issues that require adjustment.
 
 ### 1. Diffusion Model Training
 
-In practice, I trained seperate models for different DR stages.
+We train separate models for each DR stage.
 
-An example of training script is `./Diffusion_Model/run_fundus.sh`, modify `--stage 4` to train DM with desered data.
+Example training script: `./Diffusion_Model/run_fundus.sh`
+Modify `--stage 4` to select a specific stage.
 
 ```python
 label2stage = {
@@ -61,40 +80,46 @@ label2stage = {
 ```
 
 ```bash
-# modify dataset path around Line 58 of Retina_datasets.py
+# Modify dataset path (around Line 58 of Retina_datasets.py)
 cd Diffusion_Model
 bash run_fundus.sh
 ```
 
-PS: new hyperparameters
+**Additional hyperparameters:**
+
 ```python
-parser.add_argument('--cvs_file', type=str, default='/home/haochen/DataComplex/universe/DataSet/diabet_fundus/train_3fundus.csv', help='load data split cvs file') #file under data_structure folder
-parser.add_argument('--stage', type=int, default=None, help='Train the classifier with given DR stage')
-parser.add_argument('--prior_loss_weight', type=float, default=1, help='loss weight for prior dataset')
-parser.add_argument('--sync_loss_weight', type=float, default=1, help='loss weight for sync dataset')
-parser.add_argument('--sync_loss_start_step', type=int, default=5000, help='iteration for generate sync samples')
-parser.add_argument('--sync_loss_interval', type=int, default=100, help='iteration for update sync samples')
-parser.add_argument('--sync_outdir', type=str, default='./Sync_dataset_fundus/', help='sync data dir for ECC')
+parser.add_argument('--cvs_file', type=str, default='.../train_3fundus.csv')  # CSV file under data_structure/
+parser.add_argument('--stage', type=int, default=None, help='Train with specific DR stage')
+parser.add_argument('--prior_loss_weight', type=float, default=1)
+parser.add_argument('--sync_loss_weight', type=float, default=1)
+parser.add_argument('--sync_loss_start_step', type=int, default=5000)
+parser.add_argument('--sync_loss_interval', type=int, default=100)
+parser.add_argument('--sync_outdir', type=str, default='./Sync_dataset_fundus/')
 ```
 
 ### 2. Sync Data Generation (Diffusion Model Inference)
+
 ```bash
-# change settings in Line 12-20
-# change model path in Line 40
+# Update settings in Line 12–20
+# Update model path at Line 40
 cd Diffusion_Model
 python Fundus_test.py
 ```
 
 ### 3. LANet with Sync Data
-filter and ramdom sample data from all generated data, example code is `./LANet/select_topK_sync.py`
 
-### 4. LANet with Sync Data
+Filter and randomly sample generated data.
+Example script: `./LANet/select_topK_sync.py`
+
+### 4. LANet Training with Sync Data
 
 ```bash
 cd LANet
-# change dataset path in Line 19 of ddrdataset.py
+# Update dataset path at Line 19 of ddrdataset.py
 bash train.sh
 ```
+
+**Additional hyperparameters**
 
 ```python
 parser.add_argument('--fold', type=int, default=None) # 5-fold validation experiments, 0-4
@@ -103,3 +128,4 @@ parser.add_argument('--use_sampler_weight', type=int, default=0, help='adjust th
 parser.add_argument('--sync_data', type=str, default=None, help='w/ and w/o filtering')
 parser.add_argument('--ratio', type=float, default=None, help='useless in this version')
 ```
+
