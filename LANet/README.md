@@ -1,3 +1,3 @@
 # LANet
 
-This section is heavily depend on the original [LANet repo](https://github.com/FDU-VTS/LANet/tree/main)
+This section is largely based on the original [LANet repository](https://github.com/FDU-VTS/LANet/tree/main).
